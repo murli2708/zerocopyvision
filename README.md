@@ -1,6 +1,16 @@
 # ZeroCopyVision — Rust ↔ Dart zero-copy camera pipeline
 
-> Phase 3 starter. *Move 30 frames a second through a Rust inference engine without copying a single pixel more than you have to.*
+![Phase](https://img.shields.io/badge/Phase%203-The%20Eyes-7C3AED)
+![Status](https://img.shields.io/badge/status-scaffold%20%C2%B7%20building%20in%20public-orange)
+![Rust](https://img.shields.io/badge/core-Rust-000000?logo=rust&logoColor=white)
+![Flutter](https://img.shields.io/badge/app-Flutter-02569B?logo=flutter&logoColor=white)
+![Bridge](https://img.shields.io/badge/bridge-flutter__rust__bridge%20%C2%B7%20FFI-DEA584)
+![License](https://img.shields.io/badge/license-MIT-green)
+
+> Phase 3 · The Eyes. *Move 30 frames a second through a Rust inference engine without copying a single pixel more than you have to.*
+
+> **Status — honest:** scaffold + engineering plan. The FFI contract and KPI targets below
+> are the design this repo commits to; benchmark numbers are filled in on real hardware.
 
 ## Problem
 
@@ -36,6 +46,13 @@ pub fn process_frame(
 pub fn dispose(handle: EngineHandle);
 ```
 
+## Key design decisions & tradeoffs
+
+- **Pointers cross the bridge, pixels don't.** The camera buffer stays in native memory; Dart hands Rust a `ptr + width + height + stride + format` and gets back a compact `FrameResult`. Zero image-byte copies per frame is the entire point of the project.
+- **Narrow, coarse-grained FFI surface (3 functions).** `init / process_frame / dispose` — one call per frame, not many chatty calls. Each FFI crossing has overhead, so minimize crossings.
+- **Drop-on-busy backpressure.** Always process the *latest* frame and drop stale ones (queue depth ≤ 1–2). A smooth 30 FPS on fresh frames beats a laggy 60 on stale ones.
+- **Pre-allocate once, reuse forever.** All scratch/input/output buffers are allocated at engine init inside Rust; the hot path allocates nothing. A `NativeFinalizer` makes cleanup deterministic.
+
 ## Quickstart
 
 ```bash
@@ -63,6 +80,12 @@ flutter run
 - **Format drift**: YUV420 vs. BGRA varies by platform — `PixelFormat` is explicit on purpose.
 - **Bridge chattiness**: batch results into one `FrameResult` struct instead of many small calls.
 
+## Where this fits
+
+Part of the **[Edge AI Architect roadmap](https://github.com/murli2708/edge-ai-roadmap)** — a 6-month, 6-project build-in-public series.
+
+**Phase 3 of 6** · ← prev **[EdgeQuant](https://github.com/murli2708/edgequant)** · next → **[LocalMind](https://github.com/murli2708/localmind)** (Phase 4 · offline memory & RAG)
+
 ## License
 
-MIT.
+MIT © Murli — see [LICENSE](LICENSE).
