@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/banner.svg" alt="ZeroCopyVision — Phase 3 · The Eyes · Rust ↔ Dart zero-copy camera pipeline" width="100%"></p>
+
 # ZeroCopyVision — Rust ↔ Dart zero-copy camera pipeline
 
 ![Phase](https://img.shields.io/badge/Phase%203-The%20Eyes-7C3AED)
