@@ -1,0 +1,30 @@
+# Rust (Cargo.lock IS committed — this is an app, not a library)
+rust/target/
+**/*.rs.bk
+
+# Flutter / Dart (pubspec.lock IS committed for apps)
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+
+# Generated FRB bindings are committed; native build outputs are not
+*.so
+*.dylib
+*.a
+*.framework
+
+# Model weights & artifacts
+*.onnx
+*.gguf
+*.tflite
+*.mlmodel
+*.mlpackage
+*.bin
+
+# OS / editor
+.DS_Store
+.idea/
